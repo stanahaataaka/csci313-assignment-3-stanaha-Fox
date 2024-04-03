@@ -11,3 +11,35 @@
   padding: 0;
   margin: 0;
 }
+
+/* my css */
+body{
+  background-color: blanchedalmond;
+}
+h1{
+  color:darkred;
+  text-shadow: 2px 2px 5px goldenrod;
+}
+
+div {
+  color: black;
+}
+
+strong{
+  color: indianred;
+}
+
+.sidebar-nav{
+  color: darkred;
+  background-color: navajowhite;
+}
+/*links*/
+a {
+  color: goldenrod;
+}
+a:link {
+  text-decoration: none;
+}
+a:hover {
+  text-shadow: 2px 2px 5px darkgreen;
+}
