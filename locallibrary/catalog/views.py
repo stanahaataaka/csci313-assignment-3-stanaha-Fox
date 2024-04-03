@@ -65,6 +65,18 @@ class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
             .filter(status__exact='o')
             .order_by('due_back')
         )
+# Tutorial 8 Challenge
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
+class AllLoanedBooksListView(PermissionRequiredMixin, generic.ListView):
+    """Generic class-based view listing all books on loan. Visible to users with can_mark_returned permission."""
+    model = BookInstance
+    permission_required = 'catalog.can_mark_returned'
+    template_name = 'catalog/all_loaned_books.html'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return BookInstance.objects.filter(status__exact='o').order_by('due_back')
 
 # From tutorial 9
 import datetime
@@ -112,8 +124,8 @@ def renew_book_librarian(request, pk):
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Author
-# added by me
-from django.contrib.auth.mixins import PermissionRequiredMixin
+# add by me
+from .models import Book
 
 class AuthorCreate(PermissionRequiredMixin, CreateView):
     model = Author
@@ -139,5 +151,31 @@ class AuthorDelete(PermissionRequiredMixin, DeleteView):
         except Exception as e:
             return HttpResponseRedirect(
                 reverse("author-delete", kwargs={"pk": self.object.pk})
+            )
+        
+class BookCreate(PermissionRequiredMixin, CreateView):
+    model = Book
+    fields = ['title', 'author', 'summary', 'isbn', 'genre']
+    permission_required = 'catalog.add_book'
+
+
+class BookUpdate(PermissionRequiredMixin, UpdateView):
+    model = Book
+    fields = ['title', 'author', 'summary', 'isbn', 'genre']
+    permission_required = 'catalog.change_book'
+
+
+class BookDelete(PermissionRequiredMixin, DeleteView):
+    model = Book
+    success_url = reverse_lazy('books')
+    permission_required = 'catalog.delete_book'
+
+    def form_valid(self, form):
+        try:
+            self.object.delete()
+            return HttpResponseRedirect(self.success_url)
+        except Exception as e:
+            return HttpResponseRedirect(
+                reverse("book-delete", kwargs={"pk": self.object.pk})
             )
 

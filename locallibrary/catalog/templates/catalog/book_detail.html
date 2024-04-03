@@ -4,7 +4,6 @@
 <p><strong>Author:</strong> <a href="{% url 'authors' %}">{{ book.author }}</a></p>
 <p><strong>Summary:</strong> {{ book.summary }}</p>
 <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-<p><strong>Language:</strong> {{ book.language }}</p>
 <p><strong>Genre:</strong> {{ book.genre.all|join:", " }}</p>
 
 <div style="margin-left: 20px; margin-top: 20px">
@@ -26,4 +25,19 @@
 </div>
 {% endblock %}
 
+{% block sidebar %}
+  {{ block.super }}
 
+  {% if perms.catalog.change_book or perms.catalog.delete_book %}
+  <hr>
+  <ul class="sidebar-nav">
+    {% if perms.catalog.change_book %}
+      <li><a href="{% url 'book-update' book.id %}">Update Book</a></li>
+    {% endif %}
+    {% if not book.bookinstance_set.all and perms.catalog.delete_book %}
+      <li><a href="{% url 'book-delete' book.id %}">Delete Book</a></li>
+    {% endif %}
+    </ul>
+  {% endif %}
+
+{% endblock %}
